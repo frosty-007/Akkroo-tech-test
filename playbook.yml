@@ -1,0 +1,65 @@
+---
+- name: Install nginx
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Add epel-release repo
+    yum:
+      name: epel-release
+      state: present
+
+  - name: Install nginx
+    yum:
+      name: nginx
+      state: present
+  
+  - name: Enable NGiNX
+    service:
+      name: nginx
+      enabled: yes
+
+  - name: Start NGiNX
+    service:
+      name: nginx
+      state: started
+
+
+- name: Configure nginx load-balancer
+  hosts: AKKROO-WEB-02
+  become: true
+  
+  tasks:
+  - name: Insert nginx config file
+    template:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+
+  - name: restart nginx service
+    service:
+      name: nginx
+      state: restarted
+
+
+- name: Configure index.html on AKKROO-WEB-01
+  hosts: AKKROO-WEB-01
+  become: true
+  
+  tasks:
+
+  - name: Insert Index html on AKKROO-WEB-01
+    template:
+      src: index1.html
+      dest: /usr/share/nginx/html/index.html
+
+
+- name: Configure index.html on AKKROO-WEB-00
+  hosts: AKKROO-WEB-00
+  become: true
+  
+  tasks:
+
+  - name: Insert Index html on AKKROO-WEB-00
+    template:
+      src: index0.html
+      dest: /usr/share/nginx/html/index.html
